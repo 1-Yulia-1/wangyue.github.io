@@ -21,3 +21,1136 @@
     "tailwindcss": "^3.4.14"
   }
 }1
+import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
+import tailwind from '@astrojs/tailwind';
+
+// https://astro.build/config
+export default defineConfig({
+  site: 'https://example.com',
+  integrations: [react(), tailwind()],
+  output: 'static',
+  build: {
+    inlineStylesheets: 'auto',
+  },
+});
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./src/**/*.{astro,html,js,jsx,ts,tsx,md,mdx}'],
+  theme: {
+    extend: {
+      colors: {
+        ink: {
+          950: '#0b0b0c',
+          900: '#141416',
+          800: '#1f1f22',
+        },
+        bone: {
+          100: '#f3f0ea',
+          200: '#e7e2d8',
+          300: '#cfc8bb',
+          400: '#a39d92',
+        },
+        accent: {
+          DEFAULT: '#c8a97e',
+        },
+      },
+      fontFamily: {
+        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
+      letterSpacing: {
+        wider2: '0.18em',
+      },
+      transitionTimingFunction: {
+        'soft-out': 'cubic-bezier(0.22, 1, 0.36, 1)',
+      },
+    },
+  },
+  plugins: [],
+};
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "include": ["src/**/*", "astro.config.mjs", "tailwind.config.mjs"]
+}
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# editor
+.vscode/
+.idea/
+# Portfolio Site
+
+A minimalist, image-forward personal portfolio built with **Astro + React + Tailwind CSS**.
+
+## Stack
+
+- [Astro](https://astro.build) — static site framework
+- [React](https://react.dev) — interactive islands (custom cursor, hero gallery)
+- [Tailwind CSS](https://tailwindcss.com) — utility-first styling
+
+## Local development
+
+```bash
+npm install
+npm run dev    # http://localhost:4321
+npm run build  # outputs ./dist
+```
+
+## Deployment
+
+The site is a fully static build (`output: 'static'`). Drop `dist/` onto any static host:
+
+- **GitHub Pages** — see `.github/workflows/deploy.yml`
+- **Netlify / Vercel / Cloudflare Pages** — auto-detected, no config needed
+
+## Structure
+
+```
+src/
+├── components/    # React + Astro components
+├── content/       # Content collections (works, journal)
+├── layouts/       # Page layouts
+├── pages/         # File-based routes
+├── styles/        # Global CSS
+└── consts.ts      # Site-wide constants
+```
+// Site-wide constants. Edit these to make the site your own.
+
+export const SITE = {
+  title: 'Yulia — Visual Artist',
+  description:
+    'Selected works, exhibitions, and writings by Yulia — a visual artist based between cities.',
+  author: 'Yulia',
+  email: 'hello@example.com',
+  url: 'https://example.com',
+  locale: 'en',
+} as const;
+
+export const NAV: { label: string; href: string }[] = [
+  { label: 'Works', href: '/works/' },
+  { label: 'About', href: '/about/' },
+  { label: 'Journal', href: '/journal/' },
+  { label: 'Contact', href: '/contact/' },
+];
+
+export const SOCIAL: { label: string; href: string }[] = [
+  { label: 'Instagram', href: 'https://instagram.com/' },
+  { label: 'Are.na', href: 'https://are.na/' },
+  { label: 'Email', href: 'mailto:hello@example.com' },
+];
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-ink-950 text-bone-100 font-sans;
+  }
+
+  ::selection {
+    @apply bg-accent/30 text-bone-100;
+  }
+
+  a {
+    @apply text-bone-100;
+  }
+}
+
+@layer components {
+  .container-narrow {
+    @apply mx-auto w-full max-w-3xl px-6 md:px-10;
+  }
+  .container-wide {
+    @apply mx-auto w-full max-w-7xl px-6 md:px-10;
+  }
+}
+
+/* Hide the native cursor where we draw our own */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import CustomCursor from '../components/CustomCursor';
+import { SITE } from '../consts';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const {
+  title = SITE.title,
+  description = SITE.description,
+  ogImage = '/og-default.png',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang={SITE.locale} class="bg-ink-950">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonicalURL} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen">
+    <CustomCursor client:load />
+    <Nav />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+
+    <style is:global>
+      /* page transitions: gentle fade */
+      main {
+        animation: fade 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      @keyframes fade {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+  </body>
+</html>
+      ---
+import { NAV, SITE } from '../consts';
+const path = Astro.url.pathname;
+---
+
+<header class="fixed inset-x-0 top-0 z-40 mix-blend-difference">
+  <div
+    class="container-wide flex h-16 items-center justify-between"
+  >
+    <a
+      href="/"
+      class="font-serif text-xl tracking-tight text-bone-100"
+      data-cursor="hover"
+    >
+      {SITE.author}
+    </a>
+
+    <nav class="hidden items-center gap-8 md:flex">
+      {
+        NAV.map((item) => {
+          const active =
+            item.href === '/'
+              ? path === '/'
+              : path.startsWith(item.href);
+          return (
+            <a
+              href={item.href}
+              class={[
+                'text-[12px] uppercase tracking-wider2 transition-colors duration-300',
+                active
+                  ? 'text-bone-100'
+                  : 'text-bone-300/70 hover:text-bone-100',
+              ].join(' ')}
+              data-cursor="hover"
+            >
+              {item.label}
+            </a>
+          );
+        })
+      }
+    </nav>
+  </div>
+</header>
+---
+import { SITE, SOCIAL } from '../consts';
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-32 border-t border-bone-100/10">
+  <div
+    class="container-wide grid gap-10 py-14 md:grid-cols-3 md:gap-16"
+  >
+    <div>
+      <p class="font-serif text-2xl">{SITE.author}</p>
+      <p class="mt-2 max-w-xs text-sm text-bone-300/80">
+        {SITE.description}
+      </p>
+    </div>
+
+    <div>
+      <p class="mb-3 text-[11px] uppercase tracking-wider2 text-bone-400">
+        Elsewhere
+      </p>
+      <ul class="space-y-2 text-sm">
+        {
+          SOCIAL.map((s) => (
+            <li>
+              <a
+                href={s.href}
+                class="text-bone-100/90 transition-colors hover:text-accent"
+                data-cursor="hover"
+              >
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div>
+      <p class="mb-3 text-[11px] uppercase tracking-wider2 text-bone-400">
+        Contact
+      </p>
+      <a
+        href={`mailto:${SITE.email}`}
+        class="text-sm text-bone-100/90 transition-colors hover:text-accent"
+        data-cursor="hover"
+      >
+        {SITE.email}
+      </a>
+    </div>
+  </div>
+
+  <div
+    class="container-wide flex flex-col items-start justify-between gap-2 border-t border-bone-100/5 py-6 text-[11px] uppercase tracking-wider2 text-bone-400 md:flex-row md:items-center"
+  >
+    <span>© {year} {SITE.author}. All rights reserved.</span>
+    <span>Built with Astro · Tailwind</span>
+  </div>
+</footer>
+import { useEffect, useRef, useCallback } from 'react';
+
+/**
+ * CustomCursor
+ * -----------------------------------------------------
+ * - 仅桌面端 (hover: hover + pointer: fine) 启用
+ * - 轻薄空心白色小圆 + requestAnimationFrame 节流
+ * - 悬浮可交互元素时平滑放大
+ * - 移动端完全卸载,系统光标保留
+ */
+export default function CustomCursor() {
+  const ringRef = useRef<HTMLDivElement | null>(null);
+  const dotRef = useRef<HTMLDivElement | null>(null);
+
+  // 当前帧目标位置
+  const target = useRef({ x: 0, y: 0 });
+  // 当前帧渲染位置(做 lerp)
+  const current = useRef({ x: 0, y: 0 });
+  const rafId = useRef<number | null>(null);
+  const hover = useRef(false);
+
+  const setHover = useCallback((v: boolean) => {
+    hover.current = v;
+    const r = ringRef.current;
+    if (!r) return;
+    if (v) {
+      r.dataset.hover = 'true';
+    } else {
+      delete r.dataset.hover;
+    }
+  }, []);
+
+  useEffect(() => {
+    // 仅桌面端挂载;移动端直接 return
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    if (!mq.matches) return;
+
+    document.documentElement.classList.add('has-custom-cursor');
+
+    const onPointerMove = (e: PointerEvent) => {
+      target.current.x = e.clientX;
+      target.current.y = e.clientY;
+      if (dotRef.current) {
+        // dot 立即跟随,避免 ring 的 lerp 拖影造成错位感
+        dotRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+      }
+    };
+
+    const isInteractive = (el: Element | null): boolean => {
+      while (el && el !== document.body) {
+        if (
+          el instanceof HTMLElement &&
+          (el.dataset.cursor === 'hover' ||
+            ['A', 'BUTTON'].includes(el.tagName) ||
+            el.getAttribute('role') === 'button' ||
+            el.tagName === 'IMG')
+        ) {
+          return true;
+        }
+        el = el.parentElement;
+      }
+      return false;
+    };
+
+    const onOver = (e: Event) => {
+      const t = e.target as Element;
+      if (isInteractive(t)) setHover(true);
+    };
+    const onOut = (e: Event) => {
+      const t = e.target as Element;
+      if (isInteractive(t)) setHover(false);
+    };
+
+    const tick = () => {
+      // 简单线性插值,系数 0.22 让跟随感柔和
+      current.current.x += (target.current.x - current.current.x) * 0.22;
+      current.current.y += (target.current.y - current.current.y) * 0.22;
+      const r = ringRef.current;
+      if (r) {
+        r.style.transform = `translate3d(${current.current.x}px, ${current.current.y}px, 0)`;
+      }
+      rafId.current = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    document.addEventListener('pointerover', onOver, { passive: true });
+    document.addEventListener('pointerout', onOut, { passive: true });
+    rafId.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (rafId.current !== null) cancelAnimationFrame(rafId.current);
+      window.removeEventListener('pointermove', onPointerMove);
+      document.removeEventListener('pointerover', onOver);
+      document.removeEventListener('pointerout', onOut);
+      document.documentElement.classList.remove('has-custom-cursor');
+    };
+  }, [setHover]);
+
+  return (
+    <>
+      {/* 中心点 — 立即跟随 */}
+      <div
+        ref={dotRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed left-0 top-0 z-[100] hidden h-[2px] w-[2px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-bone-100 md:block"
+      />
+      {/* 外环 — lerp 跟随 */}
+      <div
+        ref={ringRef}
+        aria-hidden="true"
+        className="
+          pointer-events-none fixed left-0 top-0 z-[99] hidden
+          h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full
+          border border-bone-100/70
+          transition-[width,height,border-color] duration-300 ease-soft-out
+          md:block
+          [[data-hover='true']>&]:h-12 [[data-hover='true']>&]:w-12
+          [[data-hover='true']>&]:border-accent
+        "
+        style={{ willChange: 'transform' }}
+      />
+    </>
+  );
+}
+        import { useEffect, useRef } from 'react';
+
+export interface HeroWork {
+  slug: string;
+  title: string;
+  year: string;
+  medium: string;
+  cover: string;
+  /** 网格项的纵向偏移,用来制造松散不规则 */
+  offsetY?: number;
+}
+
+interface Props {
+  works: HeroWork[];
+}
+
+/**
+ * HorizontalHeroGallery
+ * -----------------------------------------------------
+ * - 桌面:纵向滚动 → 横向平移 + 视差
+ * - 移动:竖向普通列表
+ */
+export default function HorizontalHeroGallery({ works }: Props) {
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    if (!mq.matches) return; // 移动端直接走 CSS 流式布局
+    const section = sectionRef.current;
+    const track = trackRef.current;
+    if (!section || !track) return;
+
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const rect = section.getBoundingClientRect();
+        const vh = window.innerHeight;
+        // 滚动距离:section 进入视口到完全离开的总行程
+        const total = rect.height - vh;
+        if (total <= 0) return;
+        const progress = Math.min(Math.max(-rect.top / total, 0), 1);
+        // 横向平移的最大宽度
+        const maxX = track.scrollWidth - window.innerWidth + 32;
+        track.style.transform = `translate3d(${-progress * maxX}px, 0, 0)`;
+      });
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      aria-label="Featured works"
+      className="
+            relative w-full bg-ink-950
+            /* 桌面端制造足够高度,让滚动驱动横向 */
+            md:h-[320vh]
+          "
+    >
+      {/* 桌面端:sticky 容器,内部 track 横向排列 */}
+      <div className="hidden md:block md:sticky md:top-0 md:h-screen md:overflow-hidden">
+        <div
+          ref={trackRef}
+          className="flex h-full items-center gap-12 will-change-transform"
+          style={{ paddingLeft: '8vw', paddingRight: '8vw' }}
+        >
+          {works.map((w) => (
+            <a
+              key={w.slug}
+              href={`/works/${w.slug}/`}
+              className="group relative block h-[58vh] w-[42vw] flex-shrink-0 overflow-hidden"
+              data-cursor="hover"
+              style={{ transform: `translateY(${w.offsetY ?? 0}px)` }}
+            >
+              <img
+                src={w.cover}
+                alt={w.title}
+                loading="lazy"
+                decoding="async"
+                className="
+                  h-full w-full object-cover
+                  transition-transform duration-[1200ms] ease-soft-out
+                  group-hover:scale-[1.04]
+                "
+              />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 p-6">
+                <div className="mb-1 flex items-center gap-3 text-[11px] uppercase tracking-wider2 text-bone-300/90">
+                  <span>{w.year}</span>
+                  <span className="h-px w-6 bg-bone-300/40" />
+                  <span>{w.medium}</span>
+                </div>
+                <h3 className="font-serif text-3xl text-bone-100">{w.title}</h3>
+              </div>
+              <span
+                className="
+                  pointer-events-none absolute inset-0 bg-ink-950/0
+                  transition-colors duration-700 ease-soft-out
+                  group-hover:bg-ink-950/10
+                "
+              />
+            </a>
+          ))}
+        </div>
+
+        {/* 滚动指示器 */}
+        <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 text-[11px] uppercase tracking-wider2 text-bone-300">
+          Scroll ↓ to traverse
+        </div>
+      </div>
+
+      {/* 移动端:竖向瀑布 */}
+      <div className="container-narrow space-y-10 py-20 md:hidden">
+        {works.map((w) => (
+          <a
+            key={w.slug}
+            href={`/works/${w.slug}/`}
+            className="group block"
+            data-cursor="hover"
+          >
+            <div className="aspect-[4/5] w-full overflow-hidden">
+              <img
+                src={w.cover}
+                alt={w.title}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="mt-4 flex items-baseline justify-between">
+              <h3 className="font-serif text-2xl">{w.title}</h3>
+              <span className="text-xs text-bone-400">{w.year}</span>
+            </div>
+            <p className="mt-1 text-xs uppercase tracking-wider2 text-bone-400">
+              {w.medium}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+          import { useEffect, useRef, useState } from 'react';
+
+interface Props {
+  src: string;
+  alt: string;
+  title: string;
+  year: string;
+  medium: string;
+  href: string;
+}
+
+/**
+ * WorkCard
+ * -----------------------------------------------------
+ * - hover 时图片轻微位移+放大;title 平滑浮现
+ * - 滚动入视口时整体渐入
+ */
+export default function WorkCard({ src, alt, title, year, medium, href }: Props) {
+  const ref = useRef<HTMLAnchorElement | null>(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setShown(true);
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setShown(true);
+            io.disconnect();
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -8% 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <a
+      ref={ref}
+      href={href}
+      data-cursor="hover"
+      className={`
+        group relative block w-full overflow-hidden
+        transition-all duration-700 ease-soft-out
+        ${shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}
+      `}
+    >
+      <div className="relative overflow-hidden">
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          className="
+            block aspect-[3/4] w-full object-cover
+            transition-transform duration-[1200ms] ease-soft-out
+            group-hover:scale-[1.035] group-hover:-translate-y-1
+          "
+        />
+        <div
+          className="
+            pointer-events-none
+            absolute inset-0 flex flex-col justify-end
+            bg-gradient-to-t from-ink-950/70 via-ink-950/0 to-ink-950/0
+            p-5 opacity-0 transition-opacity duration-300 ease-soft-out
+            group-hover:opacity-100
+          "
+        >
+          <span className="mb-1 text-[10px] uppercase tracking-wider2 text-bone-200/80">
+            {year} · {medium}
+          </span>
+          <h3 className="font-serif text-2xl text-bone-100">{title}</h3>
+        </div>
+      </div>
+      <div className="mt-4 flex items-baseline justify-between gap-4">
+        <h3 className="font-serif text-lg leading-snug">{title}</h3>
+        <span className="shrink-0 text-xs text-bone-400">{year}</span>
+      </div>
+    </a>
+  );
+}
+    ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HorizontalHeroGallery from '../components/HorizontalHeroGallery';
+import { SITE } from '../consts';
+
+// 占位的精选作品 — 真实数据请放到 src/content/works/ 后用 getCollection 读取
+const featured = [
+  {
+    slug: 'salt-marsh',
+    title: 'Salt Marsh',
+    year: '2024',
+    medium: 'Photography',
+    cover: 'https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?w=1600&q=80&auto=format&fit=crop',
+    offsetY: 0,
+  },
+  {
+    slug: 'fold-and-fold',
+    title: 'Fold & Fold',
+    year: '2023',
+    medium: 'Paper, ink',
+    cover: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=1600&q=80&auto=format&fit=crop',
+    offsetY: 24,
+  },
+  {
+    slug: 'tide-table',
+    title: 'Tide Table',
+    year: '2023',
+    medium: 'Mixed media',
+    cover: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=1600&q=80&auto=format&fit=crop',
+    offsetY: -16,
+  },
+  {
+    slug: 'study-in-grey',
+    title: 'Study in Grey',
+    year: '2022',
+    medium: 'Oil on linen',
+    cover: 'https://images.unsplash.com/photo-1549887534-1541e9326642?w=1600&q=80&auto=format&fit=crop',
+    offsetY: 12,
+  },
+  {
+    slug: 'long-exposure',
+    title: 'Long Exposure',
+    year: '2022',
+    medium: 'Photography',
+    cover: 'https://images.unsplash.com/photo-1493514789931-586cb221d7a7?w=1600&q=80&auto=format&fit=crop',
+    offsetY: -8,
+  },
+];
+---
+
+<BaseLayout>
+  <section class="relative h-screen w-full overflow-hidden">
+    <img
+      src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=2400&q=80&auto=format&fit=crop"
+      alt=""
+      class="absolute inset-0 h-full w-full object-cover"
+    />
+    <div class="absolute inset-0 bg-gradient-to-b from-ink-950/30 via-ink-950/40 to-ink-950"></div>
+    <div class="relative z-10 flex h-full flex-col justify-end container-wide pb-24">
+      <p class="mb-3 text-[11px] uppercase tracking-wider2 text-bone-300">
+        {SITE.author} · Selected Works 2020—2024
+      </p>
+      <h1 class="font-serif text-5xl leading-[1.05] text-bone-100 md:text-7xl">
+        Quiet pictures<br/>of moving things.
+      </h1>
+      <p class="mt-6 max-w-md text-bone-300/90">
+        A practice in slowness — photography, paper, and the patient looking
+        that turns weather into image.
+      </p>
+    </div>
+  </section>
+
+  <HorizontalHeroGallery client:load works={featured} />
+
+  <section class="container-wide py-32">
+    <div class="grid gap-10 md:grid-cols-2 md:gap-16">
+      <p class="text-[11px] uppercase tracking-wider2 text-bone-400">
+        Statement
+      </p>
+      <div class="max-w-xl space-y-5 text-bone-200/90">
+        <p>
+          I work at the edge of photography and material, looking for the
+          small, repeatable gestures that turn a place into an image — and
+          an image back into a place.
+        </p>
+        <p>
+          Recent projects have appeared at <em>Atelier Bord du Lac</em>,
+          <em>Print Annual 23</em>, and in private collections in Berlin,
+          Kyoto, and Mexico City.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorkCard from '../../components/WorkCard';
+
+const works = [
+  { slug: 'salt-marsh',      title: 'Salt Marsh',     year: '2024', medium: 'Photography', src: 'https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?w=1200&q=80&auto=format&fit=crop' },
+  { slug: 'fold-and-fold',   title: 'Fold & Fold',    year: '2023', medium: 'Paper, ink',  src: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=1200&q=80&auto=format&fit=crop' },
+  { slug: 'tide-table',      title: 'Tide Table',     year: '2023', medium: 'Mixed media', src: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=1200&q=80&auto=format&fit=crop' },
+  { slug: 'study-in-grey',   title: 'Study in Grey',  year: '2022', medium: 'Oil on linen', src: 'https://images.unsplash.com/photo-1549887534-1541e9326642?w=1200&q=80&auto=format&fit=crop' },
+  { slug: 'long-exposure',   title: 'Long Exposure',  year: '2022', medium: 'Photography', src: 'https://images.unsplash.com/photo-1493514789931-586cb221d7a7?w=1200&q=80&auto=format&fit=crop' },
+  { slug: 'north-window',    title: 'North Window',   year: '2021', medium: 'Ink on paper', src: 'https://images.unsplash.com/photo-1490604001847-b712b0c2f967?w=1200&q=80&auto=format&fit=crop' },
+];
+---
+
+<BaseLayout title="Works — Yulia">
+  <section class="container-wide pt-32 pb-20">
+    <p class="mb-2 text-[11px] uppercase tracking-wider2 text-bone-400">
+      Index · 2020—2024
+    </p>
+    <h1 class="font-serif text-5xl text-bone-100 md:text-6xl">Works</h1>
+    <p class="mt-6 max-w-xl text-bone-300/90">
+      A growing index of selected projects. Click any piece to see
+      process notes, dimensions, and availability.
+    </p>
+  </section>
+
+  <section class="container-wide pb-32">
+    <div class="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+      {works.map((w) => (
+        <WorkCard
+          client:visible
+          src={w.src}
+          alt={w.title}
+          title={w.title}
+          year={w.year}
+          medium={w.medium}
+          href={`/works/${w.slug}/`}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { works } from '../../data/works';
+
+export function getStaticPaths() {
+  return works.map((w) => ({ params: { slug: w.slug }, props: { work: w } }));
+}
+
+const { work } = Astro.props;
+---
+
+<BaseLayout title={`${work.title} — Yulia`} description={work.medium}>
+  <article class="container-wide pt-32 pb-24">
+    <header class="mb-12 grid gap-8 md:grid-cols-3">
+      <div class="md:col-span-2">
+        <p class="mb-3 text-[11px] uppercase tracking-wider2 text-bone-400">
+          {work.year} · {work.medium}
+        </p>
+        <h1 class="font-serif text-5xl text-bone-100 md:text-6xl">{work.title}</h1>
+      </div>
+      <dl class="space-y-3 text-sm text-bone-300/90">
+        <div class="flex justify-between gap-6 border-b border-bone-100/10 pb-2">
+          <dt class="text-bone-400">Year</dt><dd>{work.year}</dd>
+        </div>
+        <div class="flex justify-between gap-6 border-b border-bone-100/10 pb-2">
+          <dt class="text-bone-400">Medium</dt><dd>{work.medium}</dd>
+        </div>
+        <div class="flex justify-between gap-6 border-b border-bone-100/10 pb-2">
+          <dt class="text-bone-400">Dimensions</dt><dd>{work.dimensions}</dd>
+        </div>
+        <div class="flex justify-between gap-6 border-b border-bone-100/10 pb-2">
+          <dt class="text-bone-400">Edition</dt><dd>{work.edition}</dd>
+        </div>
+      </dl>
+    </header>
+
+    <figure class="overflow-hidden">
+      <img src={work.cover} alt={work.title} class="w-full object-cover" />
+    </figure>
+
+    {work.notes && (
+      <section class="mt-16 grid gap-8 md:grid-cols-3">
+        <p class="text-[11px] uppercase tracking-wider2 text-bone-400">Notes</p>
+        <div class="md:col-span-2 max-w-2xl text-bone-200/90 space-y-4">
+          <p>{work.notes}</p>
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>
+export interface Work {
+  slug: string;
+  title: string;
+  year: string;
+  medium: string;
+  dimensions: string;
+  edition: string;
+  cover: string;
+  notes?: string;
+}
+
+export const works: Work[] = [
+  {
+    slug: 'salt-marsh',
+    title: 'Salt Marsh',
+    year: '2024',
+    medium: 'Photography',
+    dimensions: '60 × 90 cm',
+    edition: 'Edition of 7',
+    cover: 'https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?w=2000&q=80&auto=format&fit=crop',
+    notes: 'Made over four mornings at the edge of the Camargue, in early light before the wind picked up.',
+  },
+  {
+    slug: 'fold-and-fold',
+    title: 'Fold & Fold',
+    year: '2023',
+    medium: 'Paper, ink',
+    dimensions: '40 × 40 cm',
+    edition: 'Unique',
+    cover: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=2000&q=80&auto=format&fit=crop',
+  },
+  {
+    slug: 'tide-table',
+    title: 'Tide Table',
+    year: '2023',
+    medium: 'Mixed media',
+    dimensions: 'Variable',
+    edition: 'Open',
+    cover: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=2000&q=80&auto=format&fit=crop',
+  },
+  {
+    slug: 'study-in-grey',
+    title: 'Study in Grey',
+    year: '2022',
+    medium: 'Oil on linen',
+    dimensions: '50 × 70 cm',
+    edition: 'Unique',
+    cover: 'https://images.unsplash.com/photo-1549887534-1541e9326642?w=2000&q=80&auto=format&fit=crop',
+  },
+  {
+    slug: 'long-exposure',
+    title: 'Long Exposure',
+    year: '2022',
+    medium: 'Photography',
+    dimensions: '80 × 120 cm',
+    edition: 'Edition of 5',
+    cover: 'https://images.unsplash.com/photo-1493514789931-586cb221d7a7?w=2000&q=80&auto=format&fit=crop',
+  },
+  {
+    slug: 'north-window',
+    title: 'North Window',
+    year: '2021',
+    medium: 'Ink on paper',
+    dimensions: '30 × 42 cm',
+    edition: 'Unique',
+    cover: 'https://images.unsplash.com/photo-1490604001847-b712b0c2f967?w=2000&q=80&auto=format&fit=crop',
+  },
+];
+    ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+---
+
+<BaseLayout title={`About — ${SITE.author}`}>
+  <section class="container-wide pt-32 pb-24">
+    <p class="mb-2 text-[11px] uppercase tracking-wider2 text-bone-400">About</p>
+    <h1 class="font-serif text-5xl text-bone-100 md:text-6xl">
+      A practice in slowness.
+    </h1>
+
+    <div class="mt-16 grid gap-12 md:grid-cols-3">
+      <div class="md:col-span-2 space-y-5 text-bone-200/90 max-w-2xl">
+        <p>
+          I make quiet images and slow objects — photographs, folded
+          paper, occasional drawings — and the writing that gathers
+          around them.
+        </p>
+        <p>
+          I studied visual art in Berlin and Kyoto, and have been
+          exhibiting and teaching since 2018. My work is held in
+          private collections across Europe and East Asia.
+        </p>
+        <p>
+          For commissions, prints, or studio visits, please reach out
+          by email.
+        </p>
+      </div>
+
+      <aside class="space-y-6 text-sm">
+        <div>
+          <p class="text-[11px] uppercase tracking-wider2 text-bone-400 mb-2">Based</p>
+          <p class="text-bone-200/90">Berlin · Kyoto</p>
+        </div>
+        <div>
+          <p class="text-[11px] uppercase tracking-wider2 text-bone-400 mb-2">Selected exhibitions</p>
+          <ul class="space-y-1 text-bone-200/90">
+            <li>2024 — Atelier Bord du Lac, group</li>
+            <li>2023 — Print Annual 23, juried</li>
+            <li>2022 — Slow Looking, solo</li>
+            <li>2021 — Paper & Tide, duo</li>
+          </ul>
+        </div>
+        <div>
+          <p class="text-[11px] uppercase tracking-wider2 text-bone-400 mb-2">Contact</p>
+          <a
+            href={`mailto:${SITE.email}`}
+            class="text-bone-100 underline-offset-4 hover:underline"
+            data-cursor="hover"
+          >
+            {SITE.email}
+          </a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const entries = [
+  { date: '2024-09-12', title: 'On looking at weather', slug: 'on-looking-at-weather' },
+  { date: '2024-06-04', title: 'Notes from a slow summer', slug: 'notes-from-a-slow-summer' },
+  { date: '2024-02-20', title: 'Why I keep a paper sketchbook', slug: 'why-i-keep-a-paper-sketchbook' },
+];
+---
+
+<BaseLayout title="Journal — Yulia">
+  <section class="container-narrow pt-32 pb-24">
+    <p class="mb-2 text-[11px] uppercase tracking-wider2 text-bone-400">Journal</p>
+    <h1 class="font-serif text-5xl text-bone-100 md:text-6xl">Notes & writing</h1>
+    <p class="mt-6 max-w-xl text-bone-300/90">
+      Occasional long-form writing about the practice — process notes,
+      readings, and the occasional essay.
+    </p>
+
+    <ul class="mt-16 divide-y divide-bone-100/10 border-t border-bone-100/10">
+      {entries.map((e) => (
+        <li>
+          <a
+            href={`/journal/${e.slug}/`}
+            class="group flex items-baseline justify-between gap-6 py-5"
+            data-cursor="hover"
+          >
+            <span class="font-serif text-2xl text-bone-100 transition-colors group-hover:text-accent">
+              {e.title}
+            </span>
+            <time class="shrink-0 text-xs uppercase tracking-wider2 text-bone-400">
+              {e.date}
+            </time>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, SOCIAL } from '../consts';
+---
+
+<BaseLayout title={`Contact — ${SITE.author}`}>
+  <section class="container-narrow pt-32 pb-24">
+    <p class="mb-2 text-[11px] uppercase tracking-wider2 text-bone-400">Contact</p>
+    <h1 class="font-serif text-5xl text-bone-100 md:text-6xl">Get in touch.</h1>
+
+    <div class="mt-12 space-y-3">
+      <a
+        href={`mailto:${SITE.email}`}
+        class="block font-serif text-3xl text-bone-100 underline-offset-4 transition-colors hover:text-accent hover:underline"
+        data-cursor="hover"
+      >
+        {SITE.email}
+      </a>
+      <p class="text-sm text-bone-300/80">
+        For commissions, prints, exhibitions, and studio visits.
+      </p>
+    </div>
+
+    <ul class="mt-16 flex flex-wrap gap-x-8 gap-y-3 text-sm">
+      {SOCIAL.map((s) => (
+        <li>
+          <a
+            href={s.href}
+            class="text-bone-100/90 transition-colors hover:text-accent"
+            data-cursor="hover"
+          >
+            {s.label} ↗
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Not found">
+  <section class="container-narrow flex min-h-[80vh] flex-col justify-center py-24">
+    <p class="mb-2 text-[11px] uppercase tracking-wider2 text-bone-400">404</p>
+    <h1 class="font-serif text-5xl text-bone-100 md:text-6xl">
+      That page is missing.
+    </h1>
+    <p class="mt-6 max-w-md text-bone-300/90">
+      The link may be old, or the work has been archived.
+      Try the index, or head back home.
+    </p>
+    <div class="mt-10 flex gap-6 text-sm">
+      <a href="/works/" class="text-bone-100 underline-offset-4 hover:underline" data-cursor="hover">
+        Browse works →
+      </a>
+      <a href="/" class="text-bone-100/70 underline-offset-4 hover:underline" data-cursor="hover">
+        Home
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#0b0b0c"/>
+  <text x="16" y="22" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="#f3f0ea">Y</text>
+</svg>
