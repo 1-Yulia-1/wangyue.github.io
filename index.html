@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Your Name — Portfolio 2026</title>
+<style>
+  /* ===== 全局 ===== */
+  :root {
+    --ink: rgba(0, 0, 0, 0.88);
+    --muted: rgba(0, 0, 0, 0.5);
+    --line: 1px solid rgba(0, 0, 0, 0.15);
+    --paper: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizelegibility; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+    letter-spacing: 0;
+    line-height: 1.5;
+    padding-bottom: 40vh;
+  }
+
+  .mono {
+    font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+  .wrap {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* ===== 顶部提示条 ===== */
+  .notice {
+    border-bottom: var(--line);
+    padding: 10px 0;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* ===== 导航 ===== */
+  header.top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 26px 0 20px;
+    border-bottom: var(--line);
+  }
+
+  .logo {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  nav.site-nav { display: flex; gap: 30px; }
+  nav.site-nav a { font-size: 13px; letter-spacing: 0.03em; }
+  nav.site-nav a.active { text-decoration: underline; text-underline-offset: 4px; }
+
+  /* ===== 视图切换 ===== */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ===== Works 视图 ===== */
+  .hero {
+    padding: 40px 0 26px;
+  }
+  .hero h1 {
+    font-size: clamp(34px, 6vw, 72px);
+    font-weight: 500;
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+  .hero .sub {
+    margin-top: 14px;
+    color: var(--muted);
+    max-width: 40em;
+    font-size: 15px;
+  }
+
+  .works-list { border-top: var(--line); }
+
+  .work-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 32px;
+    align-items: center;
+    padding: 30px 0;
+    border-bottom: var(--line);
+    cursor: pointer;
+  }
+  .work-item .meta {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+  }
+  .work-item .idx { color: var(--muted); font-size: 12px; }
+  .work-item h3 {
+    font-size: clamp(18px, 2.6vw, 30px);
+    font-weight: 500;
+    line-height: 1.15;
+  }
+  .work-item .tag {
+    display: block;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .work-item .thumb {
+    width: 200px;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    opacity: 0;
+    transform: translateX(8px);
+    transition: opacity .4s ease, transform .4s ease;
+  }
+  .work-item:hover .thumb { opacity: 1; transform: translateX(0); }
+
+  /* ===== About 视图 ===== */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 48px;
+    padding-top: 48px;
+  }
+  .about-grid h2 {
+    font-size: clamp(24px, 3vw, 40px);
+    font-weight: 500;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+  .about-grid p { color: rgba(0,0,0,0.72); margin-bottom: 16px; max-width: 34em; }
+  .about-grid .mono { display: block; margin-bottom: 10px; color: var(--muted); }
+
+  /* ===== Contact 视图 ===== */
+  .contact {
+    padding-top: 48px;
+    max-width: 34em;
+  }
+  .contact h2 {
+    font-size: clamp(26px, 3vw, 44px);
+    font-weight: 500;
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+  .contact-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 16px 0;
+    border-bottom: var(--line);
+  }
+  .contact-row .mono { color: var(--muted); }
+  .contact-row a { font-size: 16px; }
+
+  /* ===== 页脚 ===== */
+  footer.site-foot {
+    margin-top: 80px;
+    border-top: var(--line);
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 720px) {
+    .wrap { padding: 0 20px; }
+    header.top { flex-direction: column; gap: 14px; }
+    .work-item { grid-template-columns: 1fr; gap: 14px; }
+    .work-item .thumb { width: 100%; opacity: 1; transform: none; }
+    .about-grid { grid-template-columns: 1fr; gap: 28px; }
+    .contact-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .notice { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="notice">FOR THE BEST EXPERIENCE, PLEASE OPEN THIS WEBPAGE ON A DESKTOP COMPUTER.</div>
+
+<div class="wrap">
+
+  <header class="top">
+    <a href="#works" class="logo">Your Name</a>
+    <nav class="site-nav">
+      <a href="#works" data-view="works" class="active">Works</a>
+      <a href="#about" data-view="about">About</a>
+      <a href="#contact" data-view="contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- ===== Works ===== -->
+  <section id="works" class="view active">
+    <div class="hero">
+      <h1>Portfolio 2026</h1>
+      <p class="sub">Independent designer. Brand identity, visual design and motion. Selected projects below.</p>
+    </div>
+
+    <div class="works-list">
+      <article class="work-item" data-link="#project-1">
+        <div>
+          <div class="meta">
+            <span class="idx mono">01</span>
+            <h3>Brand Identity —&nbsp;Project Title A</h3>
+          </div>
+          <span class="tag">Branding / 2026</span>
+        </div>
+        <img class="thumb" src="assets/work-1.jpg" alt="Project A cover">
+      </article>
+
+      <article class="work-item" data-link="#project-2">
+        <div>
+          <div class="meta">
+            <span class="idx mono">02</span>
+            <h3>Flat Graphic Pattern Series</h3>
+          </div>
+          <span class="tag">Graphic Design / 2026</span>
+        </div>
+        <img class="thumb" src="assets/work-2.jpg" alt="Project B cover">
+      </article>
+
+      <article class="work-item" data-link="#project-3">
+        <div>
+          <div class="meta">
+            <span class="idx mono">03</span>
+            <h3>Poster —&nbsp;Swiss Style Study</h3>
+          </div>
+          <span class="tag">Poster / 2025</span>
+        </div>
+        <img class="thumb" src="assets/work-3.jpg" alt="Project C cover">
+      </article>
+
+      <article class="work-item" data-link="#project-4">
+        <div>
+          <div class="meta">
+            <span class="idx mono">04</span>
+            <h3>Book Cover Design</h3>
+          </div>
+          <span class="tag">Editorial / 2025</span>
+        </div>
+        <img class="thumb" src="assets/work-4.jpg" alt="Project D cover">
+      </article>
+    </div>
+  </section>
+
+  <!-- ===== About ===== -->
+  <section id="about" class="view">
+    <div class="about-grid">
+      <div>
+        <h2>About</h2>
+        <p>I am a designer working across brand identity, visual and editorial design. I care about clear structure, honest type and the quiet details that make a system feel considered.</p>
+        <p>Based in Shanghai. Available for freelance and full-time collaboration.</p>
+      </div>
+      <div>
+        <span class="mono">Education</span>
+        <p>Bachelor of Design, Academy Name — 2020</p>
+        <span class="mono">Experience</span>
+        <p>Designer at Studio X · 2021 — 2024<br>Freelance Designer · 2024 — Present</p>
+        <span class="mono">Awards</span>
+        <p>National College Advertising Art Competition — National Award (AI-generated video), 2026</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Contact ===== -->
+  <section id="contact" class="view">
+    <div class="contact">
+      <h2>Let's work together</h2>
+      <div class="contact-row">
+        <span class="mono">Email</span>
+        <a href="mailto:hello@example.com">hello@example.com</a>
+      </div>
+      <div class="contact-row">
+        <span class="mono">Behance</span>
+        <a href="#" target="_blank" rel="noopener">@yourname</a>
+      </div>
+      <div class="contact-row">
+        <span class="mono">Instagram</span>
+        <a href="#" target="_blank" rel="noopener">@yourname</a>
+      </div>
+      <div class="contact-row">
+        <span class="mono">WeChat</span>
+        <span>yourname-design</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-foot">
+    <span class="mono">© 2026 Your Name</span>
+    <span class="mono">Designed &amp; built with care</span>
+  </footer>
+
+</div>
+
+<script>
+  // ===== 页内 hash 路由：切换 Works / About / Contact =====
+  var views = document.querySelectorAll('.view');
+  var navLinks = document.querySelectorAll('.site-nav a');
+
+  function showView(id) {
+    views.forEach(function (v) {
+      v.classList.toggle('active', v.id === id);
+    });
+    navLinks.forEach(function (a) {
+      a.classList.toggle('active', a.getAttribute('data-view') === id);
+    });
+  }
+
+  function route() {
+    var hash = location.hash.replace('#', '');
+    if (hash === 'about') showView('about');
+    else if (hash === 'contact') showView('contact');
+    else showView('works');
+  }
+
+  window.addEventListener('hashchange', route);
+  route();
+
+  // ===== 作品项点击 -> 跳到锚点（可替换为真实项目详情页） =====
+  document.querySelectorAll('.work-item').forEach(function (item) {
+    item.addEventListener('click', function () {
+      var link = item.getAttribute('data-link');
+      if (link) location.hash = link;
+    });
+  });
+</script>
+
+</body>
+</html>
